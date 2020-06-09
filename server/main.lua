@@ -9,7 +9,7 @@ ESX.RegisterServerCallback("baz_dumpstersearch:getItem", function(source, cb)
     local luck = math.random(1, 6)
 
     if player then
-        if luck >= 1 then
+        if luck == 4 then
             local randomItem = Config["Items"][math.random(#Config["Items"])]
             local quantity = math.random(#Config["Items"])
             local itemLabel = ESX.GetItemLabel(randomItem)
