@@ -4,44 +4,33 @@ TriggerEvent("esx:getSharedObject", function(response)
     ESX = response
 end)
 
-RegisterServerEvent('esx_sopletare:getItem')
-AddEventHandler('esx_sopletare:getItem', function()
-
+ESX.RegisterServerCallback("baz_dumpstersearch:getItem", function(source, cb)
+    local player = ESX.GetPlayerFromId(source)
     local luck = math.random(1, 6)
 
-    if luck == 1 then
+    if player then
+        if luck >= 1 then
+            local randomItem = Config["Items"][math.random(#Config["Items"])]
+            local quantity = math.random(#Config["Items"])
+            local itemLabel = ESX.GetItemLabel(randomItem)
+            player.addInventoryItem(randomItem, quantity)
+            cb(true, itemLabel, quantity)
+        else
+            cb(false)
+        end
 
-        local items = { -- add whatever items you want here
-            'fishing_lure',
-            'bandage',
-            'weed_pooch',
-            'bread',
-            'lotteryticket'
-        }
-
-        local player = ESX.GetPlayerFromId(source)
-        local randomItems = items[math.random(#items)]
-        local quantity = math.random(#items)
-        local itemfound = ESX.GetItemLabel(randomItems)
-
-        player.addInventoryItem(randomItems, quantity)
-        sendNotification(source, 'Du hittade ' .. quantity .. ' st ' .. itemfound, 'success', 2500)
-
-    elseif luck == 4 then
-
-        local weapons = { -- add whatever weapons you want here
-            'WEAPON_KNIFE',
-            'WEAPON_PISTOL'
-        }
-
-        local player = ESX.GetPlayerFromId(source)
-        local randomWeapons = weapons[math.random(#weapons)]
-        local quantity = math.random(#weapons)
-        local weaponfound = ESX.GetWeaponLabel(randomWeapons)
-
-        player.addWeapon(randomWeapons, quantity)
-        sendNotification(source, 'Du hittade en ' .. weaponfound, 'success', 2500)
+        if Config["EnableWeapons"] then -- disabled by default, enable in the config.
+            if luck == 2 then
+                local randomWeapon = Config["Weapons"][math.random(#Config["Weapons"])]
+                local ammunition = math.random(#Config["Weapons"])
+                local weaponLabel = ESX.GetWeaponLabel(randomWeapon)
+                player.addWeapon(randomWeapon, ammunition)
+                cb(true, weaponLabel, 1)
+            else
+                cb(false)
+            end
+        end
     else
-        sendNotification(source, 'Du hittade ingenting, skaffa dig ett jobb kanske?', 'error', 2000)
+        cb(false)
     end
 end)
