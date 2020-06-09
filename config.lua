@@ -1,5 +1,6 @@
 Config = {
 	EnableWeapons = false, -- If you want the players to be able to find weapons (false by default).
+	SearchTime = 10000, -- How much time it takes to find something in millisecond
 
 	Dumpsters = { -- Props of the dumpsters wich is getting defined in the client.
 		"prop_dumpster_01a",
