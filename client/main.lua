@@ -23,7 +23,7 @@ end)
 
 Citizen["CreateThread"](function()
     while true do
-        local sleepThread = 1000
+        local sleepThread = 750
         local playerPed = PlayerPedId()
         local playerCoords = GetEntityCoords(playerPed)
 
@@ -67,7 +67,7 @@ Search = function(entity)
     searching = true
     cachedDumpsters[entity] = true
     TaskStartScenarioInPlace(PlayerPedId(), "PROP_HUMAN_BUM_SHOPPING_CART", 0, true)
-    exports["t0sic_loadingbar"]:StartDelayedFunction(Strings["Searching"], 10000, function()
+    exports["t0sic_loadingbar"]:StartDelayedFunction(Strings["Searching"], Config["SearchTime"], function()
         ESX.TriggerServerCallback("baz_dumpstersearch:getItem", function(found, object, quantity)
             if found then
                 ESX.ShowNotification(Strings["Found"] .. quantity .. "x " .. object)
