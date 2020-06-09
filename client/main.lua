@@ -1,14 +1,8 @@
-ESX        = nil
-percent    = false
-searching  = false
-cachedBins = {}
-closestBin = {
-    'prop_dumpster_01a',
-    'prop_dumpster_02a',
-    'prop_dumpster_02b'
-}
+ESX = nil
+searching = false
+cachedDumpsters = {}
 
-Citizen.CreateThread(function()
+Citizen["CreateThread"](function()
     while ESX == nil do
         Citizen.Wait(5)
 
@@ -27,73 +21,72 @@ AddEventHandler("esx:playerLoaded", function(response)
 	ESX.PlayerData = response
 end)
 
-Citizen.CreateThread(function()
-    Citizen.Wait(100)
+Citizen["CreateThread"](function()
     while true do
-        
-        local sleep = 1000
+        local sleepThread = 1000
         local playerPed = PlayerPedId()
         local playerCoords = GetEntityCoords(playerPed)
-        
-        for i = 1, #closestBin do
-            local x = GetClosestObjectOfType(playerCoords, 1.0, GetHashKey(closestBin[i]), false, false, false)
-            local entity = nil
-            if DoesEntityExist(x) then
-                sleep  = 5
-                entity = x
-                bin    = GetEntityCoords(entity)
-                drawText3D(bin.x, bin.y, bin.z + 1.5, 'Tryck [~g~E~s~] för att söka ~b~soptunnan~s~')  
+
+        if searching then DisableControls() end -- Prevent cancel the animation and walk away
+        for i = 1, #Config["Dumpsters"] do
+            local entity = GetClosestObjectOfType(playerCoords, 1.0, GetHashKey(Config["Dumpsters"][i]), false, false, false)
+
+            if DoesEntityExist(entity) then
+                sleepThread = 5
+                
                 if IsControlJustReleased(0, 38) then
-                    if not cachedBins[entity] then
-                        openBin(entity)
+                    if not cachedDumpsters[entity] then
+                        Search(entity)
                     else
-                        sendNotification('Du har redan letat här!', 'error', 2000)
+                        ESX.ShowNotification(Strings["Searched"])
                     end
                 end
+
+                DrawText3D(GetEntityCoords(entity) + vector3(0.0, 0.0, 1.5), Strings["Search"])
                 break
+            end
+        end
+
+        Citizen.Wait(sleepThread)
+    end
+end)
+
+DrawText3D = function(coords, text)
+    SetDrawOrigin(coords)
+    SetTextScale(0.35, 0.35)
+    SetTextFont(4)
+    SetTextEntry('STRING')
+    SetTextCentre(1)
+    AddTextComponentString(text)
+    DrawText(0.0, 0.0)
+    DrawRect(0.0, 0.0125, 0.015 + text:gsub("~.-~", ""):len() / 370, 0.03, 45, 45, 45, 150)
+    ClearDrawOrigin()
+end
+
+Search = function(entity)
+    searching = true
+    cachedDumpsters[entity] = true
+    TaskStartScenarioInPlace(PlayerPedId(), "PROP_HUMAN_BUM_SHOPPING_CART", 0, true)
+    exports["t0sic_loadingbar"]:StartDelayedFunction(Strings["Searching"], 10000, function()
+        ESX.TriggerServerCallback("baz_dumpstersearch:getItem", function(found, object, quantity)
+            if found then
+                ESX.ShowNotification(Strings["Found"] .. quantity .. "x " .. object)
             else
-                sleep = 1000
+                ESX.ShowNotification(Strings["Nothing"])
             end
-        end
-        Citizen.Wait(sleep)
-    end
-end)
+        end)
 
-Citizen.CreateThread(function()
-    Citizen.Wait(100)
-    while true do
+        searching = false
+        ClearPedTasks(PlayerPedId())
+    end)
+end
 
-        local sleep = 1000
-
-        if percent then
-
-            local playerPed = PlayerPedId()
-            local playerCoords = GetEntityCoords(playerPed)
-
-            for i = 1, #closestBin do
-
-                local x = GetClosestObjectOfType(playerCoords, 1.0, GetHashKey(closestBin[i]), false, false, false)
-                local entity = nil
-                
-                if DoesEntityExist(x) then
-                    sleep  = 5
-                    entity = x
-                    bin    = GetEntityCoords(entity)
-                    drawText3D(bin.x, bin.y, bin.z + 1.5, TimeLeft .. '~g~%~s~')
-                    break
-                end
-            end
-        end
-        Citizen.Wait(sleep)
-	end
-end)
-
-Citizen.CreateThread(function()
-    while true do
-        Citizen.Wait(0)
-
-        if searching then
-            DisableControlAction(0, 73) 
-        end
-    end
-end)
+DisableControls = function()
+    DisableControlAction(0, 73) -- X (Handsup)
+    DisableControlAction(0, 323) -- X (Reset)
+    DisableControlAction(0, 288) -- F1 (Phone)
+    DisableControlAction(0, 289) -- F2 (Inventory)
+    DisableControlAction(0, 170) -- F3 (Menu)
+    DisableControlAction(0, 166) -- F5 (Menu)
+    DisableControlAction(0, 167) -- F6 (Menu)
+end
