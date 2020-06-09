@@ -14,7 +14,7 @@
 
 [INSTALLATION]
 
-1) Download: https://github.com/Bazookan/
+1) Download: https://github.com/Bazookan/baz_dumpstersearch
 
 2) Add this in your server.cfg :
 ``ensure baz_dumpstersearch``
