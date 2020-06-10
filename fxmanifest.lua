@@ -2,7 +2,7 @@ fx_version "bodacious"
 
 game "gta5"
 
-description "esx_sopletare"
+description "baz_dumpsters"
 
 version "1.0.1"
 
