@@ -30,6 +30,7 @@ Citizen["CreateThread"](function()
         if searching then DisableControls() end -- Prevent cancel the animation and walk away
         for i = 1, #Config["Dumpsters"] do
             local entity = GetClosestObjectOfType(playerCoords, 1.0, GetHashKey(Config["Dumpsters"][i]), false, false, false)
+	    local entityCoords = GetEntityCoords(entity)
 
             if DoesEntityExist(entity) then
                 sleepThread = 5
@@ -42,7 +43,7 @@ Citizen["CreateThread"](function()
                     end
                 end
 
-                DrawText3D(GetEntityCoords(entity) + vector3(0.0, 0.0, 1.5), Strings["Search"])
+                DrawText3D(entityCoords + vector3(0.0, 0.0, 1.5), Strings["Search"])
                 break
             end
         end
