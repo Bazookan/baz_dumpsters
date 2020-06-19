@@ -4,21 +4,21 @@ cachedDumpsters = {}
 
 Citizen["CreateThread"](function()
     while ESX == nil do
-        Citizen.Wait(5)
+        Citizen["Wait"](5)
 
 		TriggerEvent("esx:getSharedObject", function(library)
 			ESX = library
 		end)
     end
 
-    if ESX.IsPlayerLoaded() then
-		ESX.PlayerData = ESX.GetPlayerData()
-	end
+    if ESX["IsPlayerLoaded"]() then
+		ESX["PlayerData"] = ESX["GetPlayerData"]()
+    end
 end)
 
 RegisterNetEvent("esx:playerLoaded")
 AddEventHandler("esx:playerLoaded", function(response)
-	ESX.PlayerData = response
+	ESX["PlayerData"] = response
 end)
 
 Citizen["CreateThread"](function()
@@ -30,7 +30,7 @@ Citizen["CreateThread"](function()
         if searching then DisableControls() end -- Prevent cancel the animation and walk away
         for i = 1, #Config["Dumpsters"] do
             local entity = GetClosestObjectOfType(playerCoords, 1.0, GetHashKey(Config["Dumpsters"][i]), false, false, false)
-	        local entityCoords = GetEntityCoords(entity)
+            local entityCoords = GetEntityCoords(entity)
 
             if DoesEntityExist(entity) then
                 sleepThread = 5
@@ -39,7 +39,7 @@ Citizen["CreateThread"](function()
                     if not cachedDumpsters[entity] then
                         Search(entity)
                     else
-                        ESX.ShowNotification(Strings["Searched"])
+                        ESX["ShowNotification"](Strings["Searched"])
                     end
                 end
 
@@ -48,7 +48,7 @@ Citizen["CreateThread"](function()
             end
         end
 
-        Citizen.Wait(sleepThread)
+        Citizen["Wait"](sleepThread)
     end
 end)
 
@@ -69,14 +69,13 @@ Search = function(entity)
     cachedDumpsters[entity] = true
     TaskStartScenarioInPlace(PlayerPedId(), "PROP_HUMAN_BUM_SHOPPING_CART", 0, true)
     exports["t0sic_loadingbar"]:StartDelayedFunction(Strings["Searching"], Config["SearchTime"], function()
-        ESX.TriggerServerCallback("baz_dumpstersearch:getItem", function(found, object, quantity)
+        ESX.TriggerServerCallback("baz_dumpsters:getItem", function(found, object, quantity)
             if found then
-                ESX.ShowNotification(Strings["Found"] .. quantity .. "x " .. object)
+                ESX["ShowNotification"](Strings["Found"] .. quantity .. "x " .. object)
             else
-                ESX.ShowNotification(Strings["Nothing"])
+                ESX["ShowNotification"](Strings["Nothing"])
             end
         end)
-
         searching = false
         ClearPedTasks(PlayerPedId())
     end)
