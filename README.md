@@ -4,7 +4,7 @@
 
 * You can change items, translation and more in the config.
 
-* You can change the loadingbar to another one if you want (client.lua, row 70).
+* You can change the loadingbar to another one if you want (client.lua, row 71).
 
 [REQUIREMENTS]
   
