@@ -4,7 +4,7 @@ TriggerEvent("esx:getSharedObject", function(response)
     ESX = response
 end)
 
-ESX["RegisterServerCallback"]("baz_dumpsters:getItem", function(source, cb)
+ESX["RegisterServerCallback"](GetCurrentResourceName(), function(source, cb)
     local player = ESX["GetPlayerFromId"](source)
     local luck = math["random"](1, 6)
 
