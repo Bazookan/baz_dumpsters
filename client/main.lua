@@ -69,7 +69,7 @@ Search = function(entity)
     cachedDumpsters[entity] = true
     TaskStartScenarioInPlace(PlayerPedId(), "PROP_HUMAN_BUM_SHOPPING_CART", 0, true)
     exports["t0sic_loadingbar"]:StartDelayedFunction(Strings["Searching"], Config["SearchTime"], function()
-        ESX.TriggerServerCallback("baz_dumpsters:getItem", function(found, object, quantity)
+        ESX["TriggerServerCallback"](GetCurrentResourceName(), function(found, object, quantity)
             if found then
                 ESX["ShowNotification"](Strings["Found"] .. quantity .. "x " .. object)
             else
